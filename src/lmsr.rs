@@ -1,5 +1,3 @@
-use std::marker::PhantomData;
-
 use strum::{EnumCount, IntoEnumIterator};
 
 use crate::market::Market;
@@ -14,7 +12,6 @@ pub enum LmsrError {
 pub struct LmsrMarket<T: EnumCount + IntoEnumIterator + Copy> {
     shares: Vec<u64>,
     liquidity: f64,
-    _marker: PhantomData<T>,
     resolved: Option<T>,
     market_volume: f64,
 }
@@ -27,7 +24,6 @@ where
         Self {
             shares: vec![0; T::COUNT],
             liquidity,
-            _marker: PhantomData,
             resolved: None,
             market_volume: 0.0,
         }
