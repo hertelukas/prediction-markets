@@ -9,6 +9,28 @@ pub enum LmsrError {
     NegativeMarketCapitalization,
 }
 
+/// Used for serialization
+pub struct LmsrMarketDTO<T: EnumCount + IntoEnumIterator + Copy> {
+    pub shares: Vec<u64>,
+    pub liquidity: f64,
+    pub resolved: Option<T>,
+    pub market_volume: f64,
+}
+
+impl<T> From<LmsrMarket<T>> for LmsrMarketDTO<T>
+where
+    T: EnumCount + IntoEnumIterator + Copy + Eq,
+{
+    fn from(value: LmsrMarket<T>) -> Self {
+        Self {
+            shares: value.shares,
+            liquidity: value.liquidity,
+            resolved: value.resolved,
+            market_volume: value.market_volume,
+        }
+    }
+}
+
 pub struct LmsrMarket<T: EnumCount + IntoEnumIterator + Copy> {
     shares: Vec<u64>,
     liquidity: f64,
@@ -42,6 +64,10 @@ where
             .sum();
 
         self.liquidity * sum.ln()
+    }
+
+    pub fn serialize(self) -> LmsrMarketDTO<T> {
+        self.into()
     }
 }
 
