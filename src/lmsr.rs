@@ -64,7 +64,7 @@ where
         }
     }
 
-    fn outcome_index(outcome: T) -> usize {
+    pub fn outcome_index(outcome: T) -> usize {
         T::iter()
             .position(|o| o == outcome)
             .expect("Invalid outcome")
