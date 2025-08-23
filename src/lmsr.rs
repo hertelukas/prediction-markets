@@ -10,7 +10,7 @@ pub enum LmsrError {
 }
 
 /// Used for serialization
-pub struct LmsrMarketDTO<T: EnumCount + IntoEnumIterator + Copy> {
+pub struct LmsrMarketDTO<T: EnumCount + IntoEnumIterator + Copy + Eq> {
     pub shares: Vec<u64>,
     pub liquidity: f64,
     pub resolved: Option<T>,
@@ -44,7 +44,7 @@ where
         }
     }
 }
-pub struct LmsrMarket<T: EnumCount + IntoEnumIterator + Copy> {
+pub struct LmsrMarket<T: EnumCount + IntoEnumIterator + Copy + Eq> {
     shares: Vec<u64>,
     liquidity: f64,
     resolved: Option<T>,
