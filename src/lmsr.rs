@@ -31,6 +31,19 @@ where
     }
 }
 
+impl<T> From<LmsrMarketDTO<T>> for LmsrMarket<T>
+where
+    T: EnumCount + IntoEnumIterator + Copy + Eq,
+{
+    fn from(value: LmsrMarketDTO<T>) -> Self {
+        Self {
+            shares: value.shares,
+            liquidity: value.liquidity,
+            resolved: value.resolved,
+            market_volume: value.market_volume,
+        }
+    }
+}
 pub struct LmsrMarket<T: EnumCount + IntoEnumIterator + Copy> {
     shares: Vec<u64>,
     liquidity: f64,
@@ -124,10 +137,10 @@ where
         new_shares[i] -= amount;
 
         let new_cost = self.cost(&new_shares);
-        if self.market_volume - (new_cost - current_cost) < 0.0 {
+        if self.market_volume - (current_cost - new_cost) < 0.0 {
             return Err(LmsrError::NegativeMarketCapitalization);
         }
-        self.market_volume -= new_cost - current_cost;
+        self.market_volume -= current_cost - new_cost;
         self.shares = new_shares;
         Ok(current_cost - new_cost)
     }
@@ -243,15 +256,15 @@ mod tests {
 
     #[test]
     fn test_market_payout_different_multiple() {
-        let shares = 8;
+        let shares: u64 = 8;
         let mut market = LmsrMarket::<BinaryOutcome>::new(10.0);
 
         let mut cost = market
-            .buy(BinaryOutcome::Yes, shares / 2)
+            .buy(BinaryOutcome::Yes, shares.div_ceil(2))
             .expect("could not buy");
 
         cost += market
-            .buy(BinaryOutcome::No, (shares + 1) / 2)
+            .buy(BinaryOutcome::No, (shares + 1).div_ceil(2))
             .expect("could not buy");
 
         market
@@ -269,15 +282,15 @@ mod tests {
 
     #[test]
     fn test_market_payout_different_multiple_with_sell() {
-        let shares = 8;
+        let shares: u64 = 8;
         let mut market = LmsrMarket::<BinaryOutcome>::new(10.0);
 
         let mut cost = market
-            .buy(BinaryOutcome::Yes, shares / 2)
+            .buy(BinaryOutcome::Yes, shares.div_ceil(2))
             .expect("could not buy");
 
         cost += market
-            .buy(BinaryOutcome::No, (shares + 1) / 2)
+            .buy(BinaryOutcome::No, (shares + 1).div_ceil(2))
             .expect("could not buy");
 
         cost -= market.sell(BinaryOutcome::No, 1).expect("coult not sell");
