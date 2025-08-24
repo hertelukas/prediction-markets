@@ -21,3 +21,19 @@ pub enum BinaryOutcome {
     Yes,
     No,
 }
+
+impl From<bool> for BinaryOutcome {
+    fn from(value: bool) -> Self {
+        if value {
+            BinaryOutcome::Yes
+        } else {
+            BinaryOutcome::No
+        }
+    }
+}
+
+impl From<BinaryOutcome> for bool {
+    fn from(value: BinaryOutcome) -> Self {
+        value == BinaryOutcome::Yes
+    }
+}
