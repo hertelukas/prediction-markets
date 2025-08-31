@@ -137,7 +137,7 @@ where
         new_shares[i] -= amount;
 
         let new_cost = self.cost(&new_shares);
-        if self.market_volume - (current_cost - new_cost) < 0.001 {
+        if self.market_volume - (current_cost - new_cost) < 0.01 {
             return Err(LmsrError::NegativeMarketCapitalization);
         }
         self.market_volume -= current_cost - new_cost;
