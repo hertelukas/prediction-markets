@@ -2,11 +2,11 @@ use strum::{EnumCount, IntoEnumIterator};
 
 use crate::market::Market;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq)]
 pub enum LmsrError {
     InsufficientShares,
     Resolved,
-    NegativeMarketCapitalization,
+    NegativeMarketCapitalization(f64),
 }
 
 /// Used for serialization
@@ -137,8 +137,10 @@ where
         new_shares[i] -= amount;
 
         let new_cost = self.cost(&new_shares);
-        if self.market_volume - (current_cost - new_cost) < 0.01 {
-            return Err(LmsrError::NegativeMarketCapitalization);
+        if self.market_volume - (current_cost - new_cost) < 0.0001 {
+            return Err(LmsrError::NegativeMarketCapitalization(
+                self.market_volume - (current_cost - new_cost),
+            ));
         }
         self.market_volume -= current_cost - new_cost;
         self.shares = new_shares;
